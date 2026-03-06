@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist Frontend Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #D4AF37;
+            padding-bottom: 10px;
+        }
+        .test-suite {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-case {
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #ccc;
+            background: #f9f9f9;
+        }
+        .test-case.pass {
+            border-left-color: #4CAF50;
+            background: #f1f8f4;
+        }
+        .test-case.fail {
+            border-left-color: #f44336;
+            background: #fef1f0;
+        }
+        .test-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .test-result {
+            font-size: 14px;
+            color: #666;
+        }
+        .summary {
+            background: #D4AF37;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .error-message {
+            color: #f44336;
+            font-size: 12px;
+            margin-top: 5px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wishlist Frontend Tests</h1>
+    <div id="testResults"></div>
+    <div id="summary" class="summary"></div>
+
+    <!-- Hidden test elements -->
+    <div style="display: none;">
+        <span id="wishlistCount">0</span>
+        <div id="wishlistItems"></div>
+        <div id="emptyWishlist"></div>
+    </div>
+
+    <script>
+        // Mock localStorage
+        class MockLocalStorage {
+            constructor() {
+                this.store = {};
+            }
+            getItem(key) {
+                return this.store[key] || null;
+            }
+            setItem(key, value) {
+                this.store[key] = value;
+            }
+            removeItem(key) {
+                delete this.store[key];
+            }
+            clear() {
+                this.store = {};
+            }
+        }
+
+        // Replace localStorage with mock
+        const originalLocalStorage = window.localStorage;
+        window.localStorage = new MockLocalStorage();
+
+        // Test runner
+        class TestRunner {
+            constructor() {
+                this.tests = [];
+                this.results = [];
+            }
+
+            test(name, fn) {
+                this.tests.push({ name, fn });
+            }
+
+            async run() {
+                for (const test of this.tests) {
+                    try {
+                        await test.fn();
+                        this.results.push({ name: test.name, passed: true });
+                    } catch (error) {
+                        this.results.push({ name: test.name, passed: false, error: error.message });
+                    }
+                }
+                this.displayResults();
+            }
+
+            displayResults() {
+                const resultsDiv = document.getElementById('testResults');
+                const summaryDiv = document.getElementById('summary');
+
+                const passed = this.results.filter(r => r.passed).length;
+                const failed = this.results.filter(r => !r.passed).length;
+
+                let html = '<div class="test-suite">';
+                html += '<h2>WishlistManager Tests</h2>';
+
+                this.results.forEach(result => {
+                    const status = result.passed ? 'pass' : 'fail';
+                    const icon = result.passed ? '✓' : '✗';
+                    html += `
+                        <div class="test-case ${status}">
+                            <div class="test-name">${icon} ${result.name}</div>
+                            ${result.error ? `<div class="error-message">${result.error}</div>` : ''}
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+                resultsDiv.innerHTML = html;
+
+                summaryDiv.innerHTML = `
+                    Tests Run: ${this.results.length} |
+                    Passed: ${passed} |
+                    Failed: ${failed} |
+                    Success Rate: ${((passed / this.results.length) * 100).toFixed(1)}%
+                `;
+            }
+        }
+
+        function assert(condition, message) {
+            if (!condition) {
+                throw new Error(message || 'Assertion failed');
+            }
+        }
+
+        function assertEqual(actual, expected, message) {
+            if (actual !== expected) {
+                throw new Error(message || `Expected ${expected}, got ${actual}`);
+            }
+        }
+
+        function assertArrayEqual(actual, expected, message) {
+            if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+                throw new Error(message || `Arrays not equal: ${JSON.stringify(actual)} !== ${JSON.stringify(expected)}`);
+            }
+        }
+    </script>
+
+    <!-- Include wishlist.js -->
+    <script src="../static/js/wishlist.js"></script>
+
+    <!-- Tests -->
+    <script>
+        const runner = new TestRunner();
+
+        // Test suite
+        runner.test('WishlistManager class exists', () => {
+            assert(typeof WishlistManager === 'function', 'WishlistManager should be a class');
+        });
+
+        runner.test('WishlistManager initializes with empty wishlist', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            assertEqual(wl.items.length, 0, 'Initial wishlist should be empty');
+        });
+
+        runner.test('WishlistManager loads wishlist from localStorage', () => {
+            localStorage.clear();
+            localStorage.setItem('pandora_wishlist', JSON.stringify([
+                { id: 1, name: 'Test Product', price: 100 }
+            ]));
+            const wl = new WishlistManager();
+            assertEqual(wl.items.length, 1, 'Should load 1 item from localStorage');
+            assertEqual(wl.items[0].id, 1, 'Should load correct product');
+        });
+
+        runner.test('addItem adds product to wishlist', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            const product = { id: 1, name: 'Ring', price: 999, category: 'rings' };
+            const result = wl.addItem(product);
+            assert(result, 'addItem should return true');
+            assertEqual(wl.items.length, 1, 'Should have 1 item');
+            assertEqual(wl.items[0].id, 1, 'Should add correct product');
+        });
+
+        runner.test('addItem prevents duplicate products', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            const product = { id: 1, name: 'Ring', price: 999 };
+            wl.addItem(product);
+            const result = wl.addItem(product);
+            assert(!result, 'addItem should return false for duplicate');
+            assertEqual(wl.items.length, 1, 'Should still have only 1 item');
+        });
+
+        runner.test('isInWishlist returns true for added products', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            const product = { id: 1, name: 'Ring', price: 999 };
+            wl.addItem(product);
+            assert(wl.isInWishlist(1), 'Should find product in wishlist');
+        });
+
+        runner.test('isInWishlist returns false for non-existent products', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            assert(!wl.isInWishlist(999), 'Should not find non-existent product');
+        });
+
+        runner.test('removeItem removes product from wishlist', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            const product = { id: 1, name: 'Ring', price: 999 };
+            wl.addItem(product);
+            wl.removeItem(1);
+            assertEqual(wl.items.length, 0, 'Should remove product');
+            assert(!wl.isInWishlist(1), 'Product should no longer be in wishlist');
+        });
+
+        runner.test('removeItem handles non-existent products gracefully', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            wl.removeItem(999); // Should not throw error
+            assertEqual(wl.items.length, 0, 'Should remain empty');
+        });
+
+        runner.test('toggleItem adds product when not in wishlist', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            const product = { id: 1, name: 'Ring', price: 999 };
+            const result = wl.toggleItem(product);
+            assert(result, 'toggleItem should return true when adding');
+            assertEqual(wl.items.length, 1, 'Should add product');
+        });
+
+        runner.test('toggleItem removes product when in wishlist', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            const product = { id: 1, name: 'Ring', price: 999 };
+            wl.addItem(product);
+            const result = wl.toggleItem(product);
+            assert(!result, 'toggleItem should return false when removing');
+            assertEqual(wl.items.length, 0, 'Should remove product');
+        });
+
+        runner.test('getItemCount returns correct count', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            assertEqual(wl.getItemCount(), 0, 'Should start at 0');
+            wl.addItem({ id: 1, name: 'Ring', price: 999 });
+            assertEqual(wl.getItemCount(), 1, 'Should be 1 after adding');
+            wl.addItem({ id: 2, name: 'Necklace', price: 1299 });
+            assertEqual(wl.getItemCount(), 2, 'Should be 2 after adding second');
+        });
+
+        runner.test('saveWishlist persists to localStorage', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            wl.addItem({ id: 1, name: 'Ring', price: 999 });
+            const saved = localStorage.getItem('pandora_wishlist');
+            assert(saved !== null, 'Should save to localStorage');
+            const parsed = JSON.parse(saved);
+            assertEqual(parsed.length, 1, 'Should save correct data');
+            assertEqual(parsed[0].id, 1, 'Should save correct product');
+        });
+
+        runner.test('loadWishlist returns empty array for no data', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            const loaded = wl.loadWishlist();
+            assert(Array.isArray(loaded), 'Should return array');
+            assertEqual(loaded.length, 0, 'Should be empty array');
+        });
+
+        runner.test('loadWishlist handles invalid JSON gracefully', () => {
+            localStorage.clear();
+            localStorage.setItem('pandora_wishlist', 'invalid json');
+            // Should not throw error - might return empty array
+            const wl = new WishlistManager();
+            assert(Array.isArray(wl.items), 'Should still have items array');
+        });
+
+        runner.test('wishlist persists across instances', () => {
+            localStorage.clear();
+            const wl1 = new WishlistManager();
+            wl1.addItem({ id: 1, name: 'Ring', price: 999 });
+
+            const wl2 = new WishlistManager();
+            assertEqual(wl2.items.length, 1, 'Second instance should load saved data');
+            assertEqual(wl2.items[0].id, 1, 'Should load correct product');
+        });
+
+        runner.test('multiple products can be added to wishlist', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            const products = [
+                { id: 1, name: 'Ring', price: 999 },
+                { id: 2, name: 'Necklace', price: 1299 },
+                { id: 3, name: 'Bracelet', price: 799 }
+            ];
+
+            products.forEach(p => wl.addItem(p));
+            assertEqual(wl.items.length, 3, 'Should have 3 products');
+        });
+
+        runner.test('removeItem removes only specified product', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            wl.addItem({ id: 1, name: 'Ring', price: 999 });
+            wl.addItem({ id: 2, name: 'Necklace', price: 1299 });
+            wl.removeItem(1);
+
+            assertEqual(wl.items.length, 1, 'Should have 1 product left');
+            assertEqual(wl.items[0].id, 2, 'Should keep correct product');
+        });
+
+        runner.test('updateWishlistUI updates counter badge', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            wl.addItem({ id: 1, name: 'Ring', price: 999 });
+            wl.updateWishlistUI();
+
+            const counter = document.getElementById('wishlistCount');
+            assertEqual(counter.textContent, '1', 'Counter should show 1');
+        });
+
+        runner.test('wishlist handles products with all required fields', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            const product = {
+                id: 1,
+                name: 'Diamond Ring',
+                price: 2999,
+                category: 'rings',
+                material: 'Gold',
+                image: 'https://example.com/image.jpg',
+                description: 'Beautiful diamond ring'
+            };
+
+            wl.addItem(product);
+            assertEqual(wl.items[0].name, 'Diamond Ring', 'Should preserve name');
+            assertEqual(wl.items[0].category, 'rings', 'Should preserve category');
+            assertEqual(wl.items[0].material, 'Gold', 'Should preserve material');
+        });
+
+        runner.test('toggleWishlist function exists', () => {
+            assert(typeof toggleWishlist === 'function', 'toggleWishlist should be a function');
+        });
+
+        runner.test('wishlist singleton is created', () => {
+            assert(typeof wishlist !== 'undefined', 'wishlist singleton should exist');
+            assert(wishlist instanceof WishlistManager, 'wishlist should be WishlistManager instance');
+        });
+
+        runner.test('localStorage key is consistent', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            wl.addItem({ id: 1, name: 'Test', price: 100 });
+
+            const keys = Object.keys(localStorage.store);
+            assert(keys.includes('pandora_wishlist'), 'Should use correct localStorage key');
+        });
+
+        runner.test('wishlist supports product price formatting', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            wl.addItem({ id: 1, name: 'Ring', price: 999.99 });
+
+            assertEqual(wl.items[0].price, 999.99, 'Should preserve decimal prices');
+        });
+
+        runner.test('wishlist clears when all items removed', () => {
+            localStorage.clear();
+            const wl = new WishlistManager();
+            wl.addItem({ id: 1, name: 'Ring', price: 999 });
+            wl.addItem({ id: 2, name: 'Necklace', price: 1299 });
+            wl.removeItem(1);
+            wl.removeItem(2);
+
+            assertEqual(wl.items.length, 0, 'Should be empty');
+            assertEqual(wl.getItemCount(), 0, 'Count should be 0');
+        });
+
+        // Run all tests
+        runner.run();
+    </script>
+</body>
+</html>
