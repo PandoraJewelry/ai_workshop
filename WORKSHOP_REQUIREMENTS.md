@@ -106,8 +106,8 @@ claude --version     # 2.1.x or higher
 Clone the repository and verify everything works:
 
 ```bash
-git clone https://github.com/gravity9-tech/claude_code_workshop
-cd claude_code_workshop
+git clone https://github.com/PandoraJewelry/ai_workshop ./ai_workshop
+cd ai_workshop
 ```
 
 ### Start the Application
