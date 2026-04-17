@@ -73,7 +73,7 @@ export function ChatArea({
           alt=""
           width={800}
           height={450}
-          className="w-[600px] h-auto opacity-[0.06]"
+          className="w-[600px] h-auto opacity-[0.08]"
           aria-hidden="true"
         />
       </div>
