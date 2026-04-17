@@ -178,7 +178,7 @@ We scanned **15 repositories** and identified the definitive mapping of where bu
 | Component | File | Description |
 |---|---|---|
 | `Sidebar` | `src/components/layout/sidebar.tsx` | Agent selector, conversation history, user section. Crown icon + PANDORA logo. |
-| `ChatArea` | `src/components/chat/chat-area.tsx` | Main chat with 3D robot mascot welcome screen and sample questions. |
+| `ChatArea` | `src/components/chat/chat-area.tsx` | Main chat with crown icon welcome screen and sample questions. |
 | `ChatMessage` | `src/components/chat/chat-message.tsx` | Message bubbles with crown icon for assistant avatar. |
 | `ChatInput` | `src/components/chat/chat-input.tsx` | Text input with send button. |
 | `FunctionCallBadge` | `src/components/chat/function-call-badge.tsx` | Shows which data sources were queried. |
@@ -260,7 +260,7 @@ const agents = {
 | **Favicon** | Crown icon as favicon.ico (16x16, 32x32) + pandora-crown.svg |
 | **Color Theme** | Primary pink `#e0007a`, light pink `#fce4f0`, warm gray background `#f5f0ee` |
 | **Chat Avatar** | Crown icon in pink circle for assistant messages |
-| **Mascot** | 3D robot with crown, pink glowing eyes, heart chest display, waving pose |
+| **Welcome Icon** | Crown favicon displayed above agent name on welcome screen |
 | **Apple Touch Icon** | 192x192 crown PNG |
 
 ---
@@ -281,7 +281,7 @@ const agents = {
 | Source citations | Done | File paths and line references |
 | Rate limiting | Done | 30 req/hr per user |
 | Pandora branding | Done | Crown logo, pink theme, PANDORA wordmark |
-| 3D Robot mascot | Done | Welcome screen with animated robot |
+| Welcome screen | Done | Crown icon + agent description + sample questions |
 | Favicon | Done | Crown icon as browser tab icon |
 
 ### Phase 2: Live Backend (Next)
@@ -329,7 +329,7 @@ market-help/
 │   │       └── conversations/route.ts  # Conversation CRUD
 │   ├── components/
 │   │   ├── chat/
-│   │   │   ├── chat-area.tsx    # Main chat with robot welcome
+│   │   │   ├── chat-area.tsx    # Main chat with crown welcome
 │   │   │   ├── chat-input.tsx   # Message input
 │   │   │   ├── chat-message.tsx # Message bubble
 │   │   │   ├── function-call-badge.tsx
@@ -339,7 +339,7 @@ market-help/
 │   │   └── ui/
 │   │       ├── icons.tsx        # Icon components
 │   │       ├── pandora-logo.tsx # Crown + logo components
-│   │       └── pandora-robot.tsx # 3D robot mascot
+│   │       └── pandora-robot.tsx # Robot mascot (available for future use)
 │   ├── lib/
 │   │   ├── agents.ts            # Agent definitions + system prompts
 │   │   ├── conversation-store.ts # In-memory conversation storage
