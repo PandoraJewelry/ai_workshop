@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon, PlusIcon, MessageSquareIcon } from "@/components/ui/icons";
-import { PandoraLogo, PandoraCrownIcon } from "@/components/ui/pandora-logo";
+import { PandoraLogo } from "@/components/ui/pandora-logo";
 import type { AgentId, Conversation } from "@/types";
 
 type SidebarProps = {
@@ -36,27 +36,17 @@ export function Sidebar({
   };
 
   return (
-    <aside className="w-[280px] h-screen bg-white border-r border-gray-200 flex flex-col">
-      {/* myPandora Logo & Title */}
-      <div className="p-4 border-b border-gray-100">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-[#e0007a] rounded-lg flex items-center justify-center">
-            <PandoraCrownIcon size={22} className="text-white" />
-          </div>
-          <div>
-            <PandoraLogo width={130} height={22} className="text-gray-900" />
-            <p className="text-[11px] text-[#e0007a] font-medium mt-0.5">
-              Market Help
-            </p>
-          </div>
-        </div>
+    <aside className="w-[280px] h-screen bg-[#ffcad4] border-r border-[#f5b0bf] flex flex-col">
+      {/* myPandora Logo */}
+      <div className="p-4 border-b border-[#f5b0bf]">
+        <PandoraLogo width={160} height={28} className="text-[#2d2d2d]" />
       </div>
 
       {/* New Chat Button */}
       <div className="p-3">
         <button
           onClick={onNewChat}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-[#e8e0dc] text-sm text-gray-700 hover:bg-[#fce4f0] hover:border-[#e0007a]/30 transition-colors"
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-[#f5b0bf] bg-white/60 text-sm text-gray-700 hover:bg-white hover:border-[#e0007a]/30 transition-colors"
         >
           <PlusIcon size={16} />
           New Chat
@@ -65,7 +55,7 @@ export function Sidebar({
 
       {/* Agent Selector */}
       <div className="px-3 pb-2">
-        <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2 px-1">
+        <p className="text-[11px] font-medium text-[#9e4a5e] uppercase tracking-wider mb-2 px-1">
           Agents
         </p>
         <div className="space-y-1">
@@ -89,13 +79,13 @@ export function Sidebar({
       </div>
 
       {/* Conversation History */}
-      <div className="flex-1 overflow-y-auto px-3 pt-2 border-t border-gray-100">
-        <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2 px-1">
+      <div className="flex-1 overflow-y-auto px-3 pt-2 border-t border-[#f5b0bf]">
+        <p className="text-[11px] font-medium text-[#9e4a5e] uppercase tracking-wider mb-2 px-1">
           Recent Chats
         </p>
         <div className="space-y-0.5">
           {conversations.length === 0 ? (
-            <p className="text-xs text-gray-400 px-1 py-2">
+            <p className="text-xs text-[#9e4a5e] px-1 py-2">
               No conversations yet
             </p>
           ) : (
@@ -105,8 +95,8 @@ export function Sidebar({
                 onClick={() => onSelectConversation(conv.id)}
                 className={`w-full text-left flex items-center gap-2 px-2.5 py-2 rounded-lg text-[13px] transition-colors ${
                   activeConversationId === conv.id
-                    ? "bg-[#fce4f0] text-[#e0007a]"
-                    : "text-gray-600 hover:bg-gray-50"
+                    ? "bg-white/70 text-[#e0007a]"
+                    : "text-[#4a2030] hover:bg-white/40"
                 }`}
               >
                 <MessageSquareIcon size={14} className="flex-shrink-0" />
@@ -118,16 +108,16 @@ export function Sidebar({
       </div>
 
       {/* User section */}
-      <div className="p-3 border-t border-gray-100">
+      <div className="p-3 border-t border-[#f5b0bf]">
         <div className="flex items-center gap-2.5 px-1">
-          <div className="w-7 h-7 bg-[#fce4f0] text-[#e0007a] rounded-full flex items-center justify-center text-xs font-medium">
+          <div className="w-7 h-7 bg-white/70 text-[#e0007a] rounded-full flex items-center justify-center text-xs font-medium">
             MK
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-medium text-gray-800 truncate">
+            <p className="text-[13px] font-medium text-[#2d2d2d] truncate">
               Market Team
             </p>
-            <p className="text-[11px] text-gray-400">Read Only</p>
+            <p className="text-[11px] text-[#9e4a5e]">Read Only</p>
           </div>
           <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-700">
             Online
