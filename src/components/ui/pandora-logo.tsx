@@ -4,35 +4,41 @@ type PandoraLogoProps = {
   height?: number;
 };
 
+/**
+ * myPandora logo — renders the crown icon + "myPandora" text
+ */
 export function PandoraLogo({
   className = "",
-  width = 120,
-  height = 24,
+  width = 140,
+  height = 28,
 }: PandoraLogoProps) {
   return (
-    <svg
-      width={width}
-      height={height}
-      viewBox="0 0 120 24"
-      fill="none"
-      className={className}
+    <div
+      className={`flex items-center gap-2 ${className}`}
+      style={{ width, height }}
     >
-      <text
-        x="0"
-        y="18"
-        fontFamily="Georgia, 'Times New Roman', serif"
-        fontSize="18"
-        fontWeight="400"
-        letterSpacing="4"
-        fill="currentColor"
+      <PandoraCrownIcon size={height} className="text-[#2d2d2d]" />
+      <span
+        style={{
+          fontFamily: "Georgia, 'Times New Roman', serif",
+          fontSize: height * 0.5,
+          fontWeight: 400,
+          letterSpacing: "0.05em",
+          color: "currentColor",
+          whiteSpace: "nowrap",
+        }}
       >
-        PANDORA
-      </text>
-    </svg>
+        myPandora
+      </span>
+    </div>
   );
 }
 
-export function PandoraCrown({
+/**
+ * Pandora Crown "O" icon — the ring with three crown prongs.
+ * Used as favicon, sidebar icon, and chat assistant avatar.
+ */
+export function PandoraCrownIcon({
   className = "",
   size = 28,
 }: {
@@ -43,19 +49,51 @@ export function PandoraCrown({
     <svg
       width={size}
       height={size}
-      viewBox="0 0 32 32"
-      fill="none"
+      viewBox="0 0 512 512"
+      fill="currentColor"
       className={className}
     >
-      {/* Crown / "O" symbol inspired by Pandora brand */}
-      <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="M10 20C10 15.5817 12.6863 12 16 12C19.3137 12 22 15.5817 22 20"
+      {/* Three crown prongs */}
+      <line
+        x1="256"
+        y1="40"
+        x2="256"
+        y2="110"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="28"
         strokeLinecap="round"
       />
-      <circle cx="16" cy="10" r="2" fill="currentColor" />
+      <line
+        x1="196"
+        y1="65"
+        x2="218"
+        y2="125"
+        stroke="currentColor"
+        strokeWidth="28"
+        strokeLinecap="round"
+      />
+      <line
+        x1="316"
+        y1="65"
+        x2="294"
+        y2="125"
+        stroke="currentColor"
+        strokeWidth="28"
+        strokeLinecap="round"
+      />
+      {/* Three dots at top of prongs */}
+      <circle cx="256" cy="32" r="20" fill="currentColor" />
+      <circle cx="192" cy="56" r="20" fill="currentColor" />
+      <circle cx="320" cy="56" r="20" fill="currentColor" />
+      {/* Ring / O shape */}
+      <circle
+        cx="256"
+        cy="316"
+        r="170"
+        stroke="currentColor"
+        strokeWidth="60"
+        fill="none"
+      />
     </svg>
   );
 }

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
+  <!-- Pandora Crown "O" icon -->
+  <!-- Three crown prongs -->
+  <path d="M256 40 L256 100" stroke="currentColor" stroke-width="28" stroke-linecap="round"/>
+  <path d="M200 65 L218 120" stroke="currentColor" stroke-width="28" stroke-linecap="round"/>
+  <path d="M312 65 L294 120" stroke="currentColor" stroke-width="28" stroke-linecap="round"/>
+  <!-- Three dots at top of prongs -->
+  <circle cx="256" cy="32" r="18" fill="currentColor"/>
+  <circle cx="196" cy="56" r="18" fill="currentColor"/>
+  <circle cx="316" cy="56" r="18" fill="currentColor"/>
+  <!-- Ring / O shape -->
+  <circle cx="256" cy="310" r="185" stroke="currentColor" stroke-width="56" fill="none"/>
+</svg>

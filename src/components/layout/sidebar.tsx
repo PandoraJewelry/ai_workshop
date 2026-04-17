@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon, PlusIcon, MessageSquareIcon } from "@/components/ui/icons";
-import { PandoraLogo } from "@/components/ui/pandora-logo";
+import { PandoraLogo, PandoraCrownIcon } from "@/components/ui/pandora-logo";
 import type { AgentId, Conversation } from "@/types";
 
 type SidebarProps = {
@@ -37,16 +37,14 @@ export function Sidebar({
 
   return (
     <aside className="w-[280px] h-screen bg-white border-r border-gray-200 flex flex-col">
-      {/* Pandora Logo & Title */}
+      {/* myPandora Logo & Title */}
       <div className="p-4 border-b border-gray-100">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-[#e0007a] rounded-lg flex items-center justify-center">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="white" />
-            </svg>
+            <PandoraCrownIcon size={22} className="text-white" />
           </div>
           <div>
-            <PandoraLogo width={100} height={18} className="text-gray-900" />
+            <PandoraLogo width={130} height={22} className="text-gray-900" />
             <p className="text-[11px] text-[#e0007a] font-medium mt-0.5">
               Market Help
             </p>

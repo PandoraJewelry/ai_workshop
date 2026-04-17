@@ -1,6 +1,7 @@
 "use client";
 
-import { SparklesIcon, UserIcon } from "@/components/ui/icons";
+import { UserIcon } from "@/components/ui/icons";
+import { PandoraCrownIcon } from "@/components/ui/pandora-logo";
 import { FunctionCallList } from "@/components/chat/function-call-badge";
 import type { Message } from "@/types";
 
@@ -58,7 +59,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
         {isUser ? (
           <UserIcon size={16} />
         ) : (
-          <SparklesIcon size={16} />
+          <PandoraCrownIcon size={18} />
         )}
       </div>
 
