@@ -1,7 +1,8 @@
 "use client";
 
 import { Icon, PlusIcon, MessageSquareIcon } from "@/components/ui/icons";
-import { PandoraLogo } from "@/components/ui/pandora-logo";
+import Image from "next/image";
+import { PandoraCrownIcon } from "@/components/ui/pandora-logo";
 import type { AgentId, Conversation } from "@/types";
 
 type SidebarProps = {
@@ -37,9 +38,18 @@ export function Sidebar({
 
   return (
     <aside className="w-[280px] h-screen bg-white border-r border-gray-200 flex flex-col">
-      {/* myPandora Logo */}
+      {/* Pandora Logo */}
       <div className="p-4 border-b border-gray-100">
-        <PandoraLogo width={160} height={28} className="text-[#2d2d2d]" />
+        <div className="flex items-center gap-2">
+          <PandoraCrownIcon size={24} className="text-[#2d2d2d]" />
+          <Image
+            src="/pandora-logo.png"
+            alt="PANDORA"
+            width={120}
+            height={20}
+            className="h-5 w-auto"
+          />
+        </div>
       </div>
 
       {/* New Chat Button */}
