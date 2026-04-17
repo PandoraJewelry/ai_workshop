@@ -52,7 +52,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
         className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
           isUser
             ? "bg-gray-200 text-gray-600"
-            : "bg-pink-600 text-white"
+            : "bg-[#e0007a] text-white"
         }`}
       >
         {isUser ? (

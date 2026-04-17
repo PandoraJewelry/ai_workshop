@@ -7,6 +7,7 @@ import { ChatArea } from "@/components/chat/chat-area";
 import { ChatInput } from "@/components/chat/chat-input";
 import type {
   AgentId,
+  ViewMode,
   Message,
   Conversation,
   FunctionCall,
@@ -48,6 +49,7 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [sources, setSources] = useState<SourceReference[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("market");
 
   const handleNewChat = useCallback(() => {
     setActiveConversationId(null);
@@ -97,6 +99,7 @@ export default function Home() {
             question: content,
             agentId: selectedAgent,
             conversationId: activeConversationId,
+            mode: viewMode,
           }),
         });
 
@@ -161,7 +164,7 @@ export default function Home() {
         setIsLoading(false);
       }
     },
-    [selectedAgent, activeConversationId]
+    [selectedAgent, activeConversationId, viewMode]
   );
 
   return (
@@ -189,7 +192,42 @@ export default function Home() {
               Hybrid Mode
             </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {/* Code / Market Mode Toggle */}
+            <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+              <button
+                onClick={() => setViewMode("market")}
+                className={`px-3 py-1.5 rounded-md text-[12px] font-medium transition-all ${
+                  viewMode === "market"
+                    ? "bg-[#e0007a] text-white shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                <span className="flex items-center gap-1.5">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  Market
+                </span>
+              </button>
+              <button
+                onClick={() => setViewMode("code")}
+                className={`px-3 py-1.5 rounded-md text-[12px] font-medium transition-all ${
+                  viewMode === "code"
+                    ? "bg-[#e0007a] text-white shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                <span className="flex items-center gap-1.5">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="16 18 22 12 16 6" />
+                    <polyline points="8 6 2 12 8 18" />
+                  </svg>
+                  Code
+                </span>
+              </button>
+            </div>
             <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-medium bg-gray-100 text-gray-600">
               Read Only
             </span>

@@ -1,5 +1,7 @@
 export type AgentId = "loyalty" | "promotions" | "content";
 
+export type ViewMode = "market" | "code";
+
 export type Agent = {
   id: AgentId;
   name: string;
@@ -39,6 +41,7 @@ export type ChatRequest = {
   question: string;
   agentId: AgentId;
   conversationId?: string;
+  mode: ViewMode;
 };
 
 export type ChatResponse = {

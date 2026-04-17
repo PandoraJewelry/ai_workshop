@@ -69,8 +69,8 @@ export function ChatArea({
         /* Empty state / Welcome screen */
         <div className="h-full flex flex-col items-center justify-center px-6">
           <div className="max-w-lg text-center">
-            <div className="w-14 h-14 bg-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <SparklesIcon size={28} className="text-pink-600" />
+            <div className="w-14 h-14 bg-[#fce4f0] rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <SparklesIcon size={28} className="text-[#e0007a]" />
             </div>
             <h2 className="text-xl font-semibold text-gray-900 mb-1">
               {agentNameMap[agentId]} Agent
@@ -84,7 +84,7 @@ export function ChatArea({
               {sampleQuestions[agentId].map((question, index) => (
                 <button
                   key={index}
-                  className="text-left px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-[13px] text-gray-600 hover:border-pink-200 hover:bg-pink-50 transition-colors"
+                  className="text-left px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-[13px] text-gray-600 hover:border-[#e0007a]/30 hover:bg-[#fce4f0] transition-colors"
                 >
                   {question}
                 </button>
@@ -102,7 +102,7 @@ export function ChatArea({
           {/* Loading indicator */}
           {isLoading && (
             <div className="flex gap-3 animate-fade-in-up">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pink-600 text-white flex items-center justify-center">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#e0007a] text-white flex items-center justify-center">
                 <SparklesIcon size={16} />
               </div>
               <div className="bg-white border border-gray-100 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">

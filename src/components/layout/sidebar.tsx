@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon, PlusIcon, MessageSquareIcon } from "@/components/ui/icons";
+import { PandoraLogo } from "@/components/ui/pandora-logo";
 import type { AgentId, Conversation } from "@/types";
 
 type SidebarProps = {
@@ -36,17 +37,19 @@ export function Sidebar({
 
   return (
     <aside className="w-[280px] h-screen bg-white border-r border-gray-200 flex flex-col">
-      {/* Logo & Title */}
+      {/* Pandora Logo & Title */}
       <div className="p-4 border-b border-gray-100">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-pink-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">P</span>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-[#e0007a] rounded-lg flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="white" />
+            </svg>
           </div>
           <div>
-            <h1 className="font-semibold text-sm text-gray-900">
+            <PandoraLogo width={100} height={18} className="text-gray-900" />
+            <p className="text-[11px] text-[#e0007a] font-medium mt-0.5">
               Market Help
-            </h1>
-            <p className="text-[11px] text-gray-400">Powered by Devin AI</p>
+            </p>
           </div>
         </div>
       </div>
@@ -55,7 +58,7 @@ export function Sidebar({
       <div className="p-3">
         <button
           onClick={onNewChat}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-[#e8e0dc] text-sm text-gray-700 hover:bg-[#fce4f0] hover:border-[#e0007a]/30 transition-colors"
         >
           <PlusIcon size={16} />
           New Chat
@@ -104,7 +107,7 @@ export function Sidebar({
                 onClick={() => onSelectConversation(conv.id)}
                 className={`w-full text-left flex items-center gap-2 px-2.5 py-2 rounded-lg text-[13px] transition-colors ${
                   activeConversationId === conv.id
-                    ? "bg-gray-100 text-gray-900"
+                    ? "bg-[#fce4f0] text-[#e0007a]"
                     : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
@@ -119,7 +122,7 @@ export function Sidebar({
       {/* User section */}
       <div className="p-3 border-t border-gray-100">
         <div className="flex items-center gap-2.5 px-1">
-          <div className="w-7 h-7 bg-pink-100 text-pink-700 rounded-full flex items-center justify-center text-xs font-medium">
+          <div className="w-7 h-7 bg-[#fce4f0] text-[#e0007a] rounded-full flex items-center justify-center text-xs font-medium">
             MK
           </div>
           <div className="flex-1 min-w-0">

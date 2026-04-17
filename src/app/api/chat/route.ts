@@ -9,12 +9,13 @@ import {
   addMessage,
 } from "@/lib/conversation-store";
 import { checkRateLimit } from "@/lib/rate-limiter";
-import type { Message, ChatRequest, FunctionCall, SourceReference } from "@/types";
+import type { Message, ChatRequest, ViewMode, FunctionCall, SourceReference } from "@/types";
 
 export async function POST(request: NextRequest) {
   try {
     const body: ChatRequest = await request.json();
-    const { question, agentId, conversationId } = body;
+    const { question, agentId, conversationId, mode = "market" } = body;
+    const viewMode: ViewMode = mode;
 
     if (!question || !agentId) {
       return NextResponse.json(
@@ -106,14 +107,14 @@ export async function POST(request: NextRequest) {
         ];
       } catch {
         // Fall back to mock if Devin fails
-        const mockResult = getMockResponse(agentId, question);
+        const mockResult = getMockResponse(agentId, question, viewMode);
         answer = mockResult.answer;
         functionCalls = mockResult.functionCalls;
         sources = mockResult.sources;
       }
     } else {
       // Mock/demo mode
-      const mockResult = getMockResponse(agentId, question);
+      const mockResult = getMockResponse(agentId, question, viewMode);
       answer = mockResult.answer;
       functionCalls = mockResult.functionCalls;
       sources = mockResult.sources;
