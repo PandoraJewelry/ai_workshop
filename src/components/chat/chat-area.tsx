@@ -66,24 +66,19 @@ export function ChatArea({
 
   return (
     <div className="flex-1 overflow-y-auto relative">
-      {/* Background robot image - right side */}
-      <div className="absolute bottom-0 right-0 pointer-events-none z-0 select-none overflow-hidden">
-        <Image
-          src="/pandora-robot-bg.png"
-          alt=""
-          width={800}
-          height={450}
-          className="w-[600px] h-auto opacity-[0.08]"
-          aria-hidden="true"
-        />
-      </div>
-
       {isEmpty ? (
         /* Empty state / Welcome screen */
         <div className="h-full flex flex-col items-center justify-center px-6 relative z-10">
           <div className="max-w-lg text-center">
-            <div className="w-14 h-14 bg-[#fce4f0] rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <SparklesIcon size={28} className="text-[#e0007a]" />
+            <div className="w-14 h-14 flex items-center justify-center mx-auto mb-4">
+              <Image
+                src="/pandora-crown.png"
+                alt="Pandora"
+                width={48}
+                height={48}
+                className="w-12 h-12"
+                priority
+              />
             </div>
             <h2 className="text-xl font-semibold text-gray-900 mb-1">
               {agentNameMap[agentId]} Agent
