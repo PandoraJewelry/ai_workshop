@@ -4,6 +4,7 @@ import { useRef, useEffect } from "react";
 import { ChatMessage } from "@/components/chat/chat-message";
 import { SourceList } from "@/components/chat/source-list";
 import { SparklesIcon, LoaderIcon } from "@/components/ui/icons";
+import { PandoraRobot } from "@/components/ui/pandora-robot";
 import type { Message, AgentId, SourceReference } from "@/types";
 
 type ChatAreaProps = {
@@ -69,8 +70,8 @@ export function ChatArea({
         /* Empty state / Welcome screen */
         <div className="h-full flex flex-col items-center justify-center px-6">
           <div className="max-w-lg text-center">
-            <div className="w-14 h-14 bg-[#fce4f0] rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <SparklesIcon size={28} className="text-[#e0007a]" />
+            <div className="mx-auto mb-4">
+              <PandoraRobot size={140} />
             </div>
             <h2 className="text-xl font-semibold text-gray-900 mb-1">
               {agentNameMap[agentId]} Agent
