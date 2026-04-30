@@ -6,8 +6,17 @@ from app.customization_config import (
     ProductCustomizationConfig,
     get_customization_config,
 )
-from app.mock_data import get_all_products, get_product_by_id, get_products_by_category
-from app.models import Product
+from app.mock_data import (
+    get_all_products,
+    get_product_by_id,
+    get_products_by_category,
+    validate_discount_code,
+)
+from app.models import (
+    DiscountValidationRequest,
+    DiscountValidationResponse,
+    Product,
+)
 
 router = APIRouter()
 
@@ -96,3 +105,22 @@ async def get_customization_configuration(category: str):
         )
 
     return config
+
+
+@router.post("/discount/validate", response_model=DiscountValidationResponse)
+async def validate_discount(request: DiscountValidationRequest):
+    """Validate a discount code against the cart total"""
+    discount, result = validate_discount_code(request.code, request.cart_total)
+    if discount is None:
+        return DiscountValidationResponse(
+            valid=False,
+            message=result,
+        )
+    return DiscountValidationResponse(
+        valid=True,
+        code=discount.code,
+        discount_type=discount.discount_type,
+        value=discount.value,
+        discount_amount=result,
+        message=f"Discount applied: {discount.code}",
+    )

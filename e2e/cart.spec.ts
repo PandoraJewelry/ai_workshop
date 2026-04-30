@@ -94,6 +94,29 @@ test.describe('Shopping Cart', () => {
     }
   });
 
+  test('can apply and remove discount code', async ({ page }) => {
+    await expect(page.locator('[data-testid="product-card"]').first()).toBeVisible({ timeout: 10000 });
+
+    // Add item to cart
+    const addToCartButton = page.locator('[data-testid="product-card"]').first().locator('button:has-text("Add to Cart")');
+    await addToCartButton.click();
+
+    // Open cart
+    await page.locator('[data-testid="cart-button"]').click();
+
+    // Enter discount code
+    const discountInput = page.locator('[data-testid="discount-input"]');
+    await discountInput.fill('TEA10');
+    await page.locator('[data-testid="apply-discount"]').click();
+
+    // Verify discount is shown
+    await expect(page.locator('[data-testid="discount-line"]')).toBeVisible();
+
+    // Remove discount
+    await page.locator('[data-testid="remove-discount"]').click();
+    await expect(page.locator('[data-testid="discount-line"]')).not.toBeVisible();
+  });
+
   test('cart persists after page reload', async ({ page }) => {
     await expect(page.locator('[data-testid="product-card"]').first()).toBeVisible({ timeout: 10000 });
 

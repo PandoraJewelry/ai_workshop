@@ -32,3 +32,35 @@ class Product(BaseModel):
                 "description": "Premium hand-picked Longjing tea from Hangzhou",
             }
         }
+
+
+class DiscountCode(BaseModel):
+    """Discount code model"""
+
+    code: str = Field(..., description="Discount code string")
+    discount_type: Literal["percentage", "fixed"] = Field(
+        ..., description="Type of discount"
+    )
+    value: float = Field(
+        ..., gt=0, description="Discount value (percentage or fixed USD amount)"
+    )
+    min_order: float = Field(
+        0.0, ge=0, description="Minimum cart total required to apply discount"
+    )
+    active: bool = Field(
+        True, description="Whether the discount code is currently active"
+    )
+
+
+class DiscountValidationRequest(BaseModel):
+    code: str
+    cart_total: float
+
+
+class DiscountValidationResponse(BaseModel):
+    valid: bool
+    code: str | None = None
+    discount_type: str | None = None
+    value: float | None = None
+    discount_amount: float | None = None
+    message: str
