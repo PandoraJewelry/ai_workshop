@@ -1,4 +1,4 @@
-from app.models import Product
+from app.models import DiscountCode, Product
 
 # Mock product data for premium tea showcase
 PRODUCTS = [
@@ -171,3 +171,31 @@ def get_product_by_id(product_id: int):
 def get_products_by_category(category: str):
     """Get all products in a specific category"""
     return [product for product in PRODUCTS if product.category == category]
+
+
+DISCOUNT_CODES = [
+    DiscountCode(
+        code="TEA10", discount_type="percentage", value=10.0, min_order=30.0
+    ),
+    DiscountCode(
+        code="SAVE5", discount_type="fixed", value=5.0, min_order=20.0
+    ),
+    DiscountCode(
+        code="WELCOME15", discount_type="percentage", value=15.0, min_order=50.0
+    ),
+]
+
+
+def validate_discount_code(code: str, cart_total: float):
+    """Validate a discount code and return the discount details or None"""
+    for discount in DISCOUNT_CODES:
+        if discount.code.upper() == code.upper() and discount.active:
+            if cart_total < discount.min_order:
+                return None, f"Minimum order of ${discount.min_order:.2f} required"
+            discount_amount = (
+                cart_total * discount.value / 100
+                if discount.discount_type == "percentage"
+                else discount.value
+            )
+            return discount, discount_amount
+    return None, "Invalid discount code"

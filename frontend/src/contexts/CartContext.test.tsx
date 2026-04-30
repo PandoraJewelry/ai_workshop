@@ -4,6 +4,10 @@ import { CartProvider, useCart } from './CartContext'
 import { NotificationProvider } from './NotificationContext'
 import type { Product } from '../types'
 
+vi.mock('../services', () => ({
+  validateDiscountCode: vi.fn(),
+}))
+
 const mockProduct: Product = {
   id: 1,
   name: 'Green Dragon Tea',
@@ -184,5 +188,121 @@ describe('CartContext', () => {
       result.current.toggleCart()
     })
     expect(result.current.isOpen).toBe(false)
+  })
+
+  describe('Discount functionality', () => {
+    it('applies a valid discount code', async () => {
+      const { validateDiscountCode } = await import('../services')
+      const mockedValidate = vi.mocked(validateDiscountCode)
+      mockedValidate.mockResolvedValue({
+        valid: true,
+        code: 'TEA10',
+        discount_type: 'percentage',
+        value: 10,
+        discount_amount: 3.0,
+        message: 'Discount applied: TEA10',
+      })
+
+      const { result } = renderHook(() => useCart(), { wrapper })
+
+      act(() => {
+        result.current.addItem(mockProduct) // 29.99
+      })
+
+      await act(async () => {
+        await result.current.applyDiscount('TEA10')
+      })
+
+      expect(result.current.discount).not.toBeNull()
+      expect(result.current.discount?.code).toBe('TEA10')
+      expect(result.current.discount?.discountAmount).toBe(3.0)
+      expect(result.current.getTotal()).toBeCloseTo(29.99 - 3.0, 2)
+    })
+
+    it('sets error for invalid discount code', async () => {
+      const { validateDiscountCode } = await import('../services')
+      const mockedValidate = vi.mocked(validateDiscountCode)
+      mockedValidate.mockResolvedValue({
+        valid: false,
+        code: null,
+        discount_type: null,
+        value: null,
+        discount_amount: null,
+        message: 'Invalid discount code',
+      })
+
+      const { result } = renderHook(() => useCart(), { wrapper })
+
+      await act(async () => {
+        await result.current.applyDiscount('INVALID')
+      })
+
+      expect(result.current.discount).toBeNull()
+      expect(result.current.discountError).toBe('Invalid discount code')
+    })
+
+    it('removes discount and restores original total', async () => {
+      const { validateDiscountCode } = await import('../services')
+      const mockedValidate = vi.mocked(validateDiscountCode)
+      mockedValidate.mockResolvedValue({
+        valid: true,
+        code: 'SAVE5',
+        discount_type: 'fixed',
+        value: 5,
+        discount_amount: 5.0,
+        message: 'Discount applied: SAVE5',
+      })
+
+      const { result } = renderHook(() => useCart(), { wrapper })
+
+      act(() => {
+        result.current.addItem(mockProduct) // 29.99
+      })
+
+      await act(async () => {
+        await result.current.applyDiscount('SAVE5')
+      })
+
+      expect(result.current.getTotal()).toBeCloseTo(24.99, 2)
+
+      act(() => {
+        result.current.removeDiscount()
+      })
+
+      expect(result.current.discount).toBeNull()
+      expect(result.current.getTotal()).toBeCloseTo(29.99, 2)
+    })
+
+    it('clears discount when cart is cleared', async () => {
+      const { validateDiscountCode } = await import('../services')
+      const mockedValidate = vi.mocked(validateDiscountCode)
+      mockedValidate.mockResolvedValue({
+        valid: true,
+        code: 'TEA10',
+        discount_type: 'percentage',
+        value: 10,
+        discount_amount: 3.0,
+        message: 'Discount applied: TEA10',
+      })
+
+      const { result } = renderHook(() => useCart(), { wrapper })
+
+      act(() => {
+        result.current.addItem(mockProduct)
+      })
+
+      await act(async () => {
+        await result.current.applyDiscount('TEA10')
+      })
+
+      expect(result.current.discount).not.toBeNull()
+
+      act(() => {
+        result.current.clearCart()
+      })
+
+      expect(result.current.discount).toBeNull()
+      expect(result.current.items).toHaveLength(0)
+    })
   })
 })

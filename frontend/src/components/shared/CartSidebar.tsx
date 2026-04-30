@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useCart } from '../../contexts';
 import type { CartItem } from '../../types';
 
@@ -7,7 +8,32 @@ function formatCustomizationSummary(item: CartItem): string {
 }
 
 export function CartSidebar() {
-  const { items, isOpen, closeCart, updateQuantity, removeItem, getTotal } = useCart();
+  const {
+    items,
+    isOpen,
+    closeCart,
+    updateQuantity,
+    removeItem,
+    getTotal,
+    getSubtotal,
+    discount,
+    discountError,
+    applyDiscount,
+    removeDiscount,
+  } = useCart();
+
+  const [discountCode, setDiscountCode] = useState('');
+  const [applyingDiscount, setApplyingDiscount] = useState(false);
+
+  const handleApplyDiscount = async () => {
+    if (!discountCode.trim()) return;
+    setApplyingDiscount(true);
+    try {
+      await applyDiscount(discountCode);
+    } finally {
+      setApplyingDiscount(false);
+    }
+  };
 
   return (
     <>
@@ -126,6 +152,62 @@ export function CartSidebar() {
 
           {/* Cart Footer */}
           <div className="border-t p-6 bg-gray-50">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-gray-600">Subtotal:</span>
+              <span className="text-sm font-semibold">${getSubtotal().toFixed(2)}</span>
+            </div>
+
+            {/* Discount Code Input */}
+            {!discount && (
+              <div className="mb-3">
+                <div className="flex gap-2">
+                  <input
+                    data-testid="discount-input"
+                    type="text"
+                    value={discountCode}
+                    onChange={(e) => setDiscountCode(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleApplyDiscount();
+                    }}
+                    placeholder="Discount code"
+                    className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold"
+                  />
+                  <button
+                    data-testid="apply-discount"
+                    onClick={handleApplyDiscount}
+                    disabled={applyingDiscount || !discountCode.trim()}
+                    className="bg-gold hover:bg-dark-gold text-white text-sm font-semibold px-4 py-2 rounded transition-colors disabled:opacity-50"
+                  >
+                    {applyingDiscount ? '...' : 'Apply'}
+                  </button>
+                </div>
+                {discountError && (
+                  <p className="text-red-500 text-xs mt-1">{discountError}</p>
+                )}
+              </div>
+            )}
+
+            {/* Discount Applied Line */}
+            {discount && (
+              <div data-testid="discount-line" className="flex justify-between items-center mb-2">
+                <span className="text-sm text-green-600">
+                  Discount ({discount.code}):
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-green-600">
+                    -${discount.discountAmount.toFixed(2)}
+                  </span>
+                  <button
+                    data-testid="remove-discount"
+                    onClick={removeDiscount}
+                    className="text-xs text-red-500 hover:text-red-700 underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="flex justify-between items-center mb-4">
               <span className="text-lg font-semibold">Total:</span>
               <span className="text-2xl font-bold text-gold">${getTotal().toFixed(2)}</span>

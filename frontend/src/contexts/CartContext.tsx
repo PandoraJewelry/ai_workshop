@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import type { CartItem, Product } from '../types';
+import type { CartItem, Discount, Product } from '../types';
+import { validateDiscountCode } from '../services';
 import { useNotification } from './NotificationContext';
 
 const CART_STORAGE_KEY = 'pandora_cart';
@@ -7,15 +8,20 @@ const CART_STORAGE_KEY = 'pandora_cart';
 interface CartContextType {
   items: CartItem[];
   isOpen: boolean;
+  discount: Discount | null;
+  discountError: string | null;
   addItem: (product: Product | CartItem) => void;
   removeItem: (productId: number | string) => void;
   updateQuantity: (productId: number | string, quantity: number) => void;
   getTotal: () => number;
+  getSubtotal: () => number;
   getItemCount: () => number;
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
   clearCart: () => void;
+  applyDiscount: (code: string) => Promise<void>;
+  removeDiscount: () => void;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -34,6 +40,8 @@ function saveCart(items: CartItem[]) {
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(loadCart);
   const [isOpen, setIsOpen] = useState(false);
+  const [discount, setDiscount] = useState<Discount | null>(null);
+  const [discountError, setDiscountError] = useState<string | null>(null);
   const { show } = useNotification();
 
   const addItem = useCallback((product: Product | CartItem) => {
@@ -88,9 +96,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }, [removeItem]);
 
-  const getTotal = useCallback(() => {
+  const getSubtotal = useCallback(() => {
     return items.reduce((total, item) => total + item.price * item.quantity, 0);
   }, [items]);
+
+  const getTotal = useCallback(() => {
+    const subtotal = getSubtotal();
+    const discountAmt = discount ? discount.discountAmount : 0;
+    return Math.max(0, subtotal - discountAmt);
+  }, [getSubtotal, discount]);
 
   const getItemCount = useCallback(() => {
     return items.reduce((count, item) => count + item.quantity, 0);
@@ -103,6 +117,35 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const clearCart = useCallback(() => {
     setItems([]);
     saveCart([]);
+    setDiscount(null);
+    setDiscountError(null);
+  }, []);
+
+  const applyDiscount = useCallback(async (code: string) => {
+    setDiscountError(null);
+    try {
+      const subtotal = getSubtotal();
+      const response = await validateDiscountCode(code, subtotal);
+      if (response.valid && response.code && response.discount_type && response.value != null && response.discount_amount != null) {
+        setDiscount({
+          code: response.code,
+          discountType: response.discount_type as 'percentage' | 'fixed',
+          value: response.value,
+          discountAmount: response.discount_amount,
+        });
+        setDiscountError(null);
+      } else {
+        setDiscount(null);
+        setDiscountError(response.message);
+      }
+    } catch {
+      setDiscountError('Failed to validate discount code');
+    }
+  }, [getSubtotal]);
+
+  const removeDiscount = useCallback(() => {
+    setDiscount(null);
+    setDiscountError(null);
   }, []);
 
   return (
@@ -110,15 +153,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
       value={{
         items,
         isOpen,
+        discount,
+        discountError,
         addItem,
         removeItem,
         updateQuantity,
         getTotal,
+        getSubtotal,
         getItemCount,
         openCart,
         closeCart,
         toggleCart,
         clearCart,
+        applyDiscount,
+        removeDiscount,
       }}
     >
       {children}
